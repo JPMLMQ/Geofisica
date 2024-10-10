@@ -34,13 +34,13 @@ z2D = np.zeros([Nt,Nx])
 for ix in range(Nx):
     z2D[:,ix] = Z
 
-#plt.figure()
-#plt.imshow(z2D,cmap="jet",aspect="auto",extent=[x[0],x[-1],t[-1],t[0]])
-#plt.xlabel("distancia lateral (m)")
-#plt.ylabel("tempo (s)")
-#plt.title("Impedancia")
-#plt.colorbar()
-#plt.tight_layout()
+plt.figure()
+plt.imshow(z2D,cmap="jet",aspect="auto",extent=[x[0],x[-1],t[-1],t[0]])
+plt.xlabel("distancia lateral (m)")
+plt.ylabel("tempo (s)")
+plt.title("Impedancia")
+plt.colorbar()
+plt.tight_layout()
 
 
 r12 = (z2 - z1) / (z2 + z1)
