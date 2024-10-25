@@ -15,6 +15,17 @@ shotindex = [1, 2]
 
 index = np.concatenate((recindex, shotindex))
 tabela = np.zeros((len(index), 3))
+##### NEW
+
+inputFileReceiver = "receivers.txt"
+receiverTable = np.loadtxt(inputFileReceiver,delimiter=",",skiprows=1)
+
+inputFileSource = "sources.txt"
+sourceTable = np.loadtxt(inputFileSource,delimiter=",",skiprows=1)
+
+raise ValueError
+
+
 
 for i in range(len(rec_x)):
     tabela[i, 0] = recindex[i]   
