@@ -30,5 +30,5 @@ receiver_df = pd.DataFrame({'index': rIdx,'coordx': rx,'coordz': rz})
 
 source_df = pd.DataFrame({'index': sIdx,'coordx': sx,'coordz': sz})
 
-receiver_df.to_csv("d:/GitHub/Geofisica/receivers.csv", index=False)
-source_df.to_csv("d:/GitHub/Geofisica/sources.csv", index=False)
+receiver_df.to_csv("./receivers.csv", index=False)
+source_df.to_csv("./sources.csv", index=False)

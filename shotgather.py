@@ -4,8 +4,8 @@ import pandas as pd
 from scipy.signal import ricker
 
 
-receiverTable = pd.read_csv('d:/GitHub/Geofisica/receivers.csv')
-sourceTable = pd.read_csv('d:/GitHub/Geofisica/sources.csv')
+receiverTable = pd.read_csv('./receivers.csv')
+sourceTable = pd.read_csv('./sources.csv')
 
 rec_x = receiverTable['coordx']
 recindex = receiverTable['index']
@@ -26,14 +26,12 @@ plt.legend()
 plt.grid(True)
 plt.show()   
 
-rx_init = 0
+rx_init = int(rec_x.iloc[0])
 rx_end = int(rec_x.iloc[-1])
-
 x = np.linspace(rx_init,rx_end,len(rec_x),endpoint=False)
 
 Nt = 1001
 dt = 0.001
-
 t = np.linspace(0,dt*(Nt-1),Nt)
 
 v1 = 15000
@@ -72,15 +70,17 @@ for shot in shot_x:
 
 
 for i in range(len(shot_x)):
+    plt.figure()
+    plt.title(" shot %s"%i)
     plt.plot(rec_x, t_direct_list[i], label="Direct wave")
     plt.plot(rec_x, t_ref_list[i], label="Reflection wave")
     plt.plot(rec_x, t_hw_list[i], label="Head wave")
     plt.plot(rec_x, t_gr_list[i], label="Ground roll")
 
-plt.ylim(np.max(t_direct_list), 0)
-plt.xlabel('Distância')
-plt.ylabel('Tempo')
-plt.grid(True)
+    plt.ylim(np.max(t_direct_list), 0)
+    plt.xlabel('Distância')
+    plt.ylabel('Tempo')
+    plt.grid(True)
 plt.show()
 
 sism = np.zeros((Nt,len(rec_x)))
