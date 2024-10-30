@@ -1,8 +1,9 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import pandas as pd
 
 # sources
-sx_init = 1000
+sx_init = 0
 sx_end  = 10000
 Nsource = 5
 sx = np.linspace(sx_init,sx_end,Nsource,endpoint=False)
@@ -21,14 +22,13 @@ rIdx = np.arange(Nrec)
 plt.figure()
 plt.plot(sx,sz,"r*")
 plt.plot(rx,rz,'bv')
-plt.xlim(0,10000)
-plt.ylim(10000,0)
-plt.show(block=False)
+plt.xlim(0,5000)
+plt.ylim(1000,0)
+#plt.show()
 
-receiverTable = np.vstack(np.transpose([rIdx, rx, rz]))
-outname="receivers.txt"
-np.savetxt(outname,receiverTable,delimiter=",",fmt="%1.2f",header=" index, coord x, coord z")
+receiver_df = pd.DataFrame({'index': rIdx,'coordx': rx,'coordz': rz})
 
-sourceTable = np.vstack(np.transpose([sIdx, sx, sz]))
-outname="sources.txt"
-np.savetxt(outname,sourceTable,delimiter=",",fmt="%1.2f",header=" index, coord x, coord z")
+source_df = pd.DataFrame({'index': sIdx,'coordx': sx,'coordz': sz})
+
+receiver_df.to_csv("d:/GitHub/Geofisica/receivers.csv", index=False)
+source_df.to_csv("d:/GitHub/Geofisica/sources.csv", index=False)
