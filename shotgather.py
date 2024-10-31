@@ -83,12 +83,12 @@ for i in range(len(shot_x)):
     plt.grid(True)
 plt.show()
 
-sism = np.zeros((Nt,len(rec_x)))
+sism = np.zeros((Nt, len(rec_x)))
 
 for i, shot in enumerate(shot_x):
     for j, receptor in enumerate(rec_x):
         dx = np.abs(receptor - shot)
-        
+
         k = int((dx / v1) / dt)  
         y = int((np.sqrt((2 * Nz / v1) ** 2 + (dx / v1) ** 2)) / dt)  
         z = int((dx / v2 + (2 * Nz * np.sqrt(v2 ** 2 - v1 ** 2)) / (v1 * v2)) / dt)  
@@ -103,17 +103,21 @@ for i, shot in enumerate(shot_x):
         if u < Nt:
             sism[u, j] = 1
 
-for x in range(len(rec_x)):
-    sism[:, x] = np.convolve(sism[:, x], wavelet, mode='same')
+    for j in range(len(rec_x)):
+        sism[:, j] = np.convolve(sism[:, j], wavelet, mode='same')
+    
+    k = np.max(np.abs(sism))   
 
-k = np.max(np.abs(sism))
+    plt.figure()
+    plt.title(" shot %s"%i)
+    plt.imshow(sism, cmap="seismic", aspect="auto", extent=[0, len(rec_x), t[-1], t[0]], vmin=-k, vmax=k)
+    plt.colorbar(label='Amplitude')
+    plt.xlabel('Receptores')
+    plt.ylabel('Tempo (s)')
+    plt.tight_layout()
+    plt.show()
 
-plt.imshow(sism, cmap="seismic", aspect="auto", extent=[0, rx_end, t[-1], t[0]], vmin=-k, vmax=k)
-plt.colorbar(label='Amplitude')
-plt.title("Sismograma")
-plt.tight_layout()
-plt.show()
-
+    sism = np.zeros((Nt, len(rec_x)))
 
 dist = np.zeros((len(shot_x), len(rec_x)))
 
