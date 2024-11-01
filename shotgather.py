@@ -69,21 +69,22 @@ for shot in shot_x:
     t_gr_list.append(t_gr_wave)
 
 
-for i in range(len(shot_x)):
-    plt.figure()
-    plt.title(" shot %s"%i)
-    plt.plot(rec_x, t_direct_list[i], label="Direct wave")
-    plt.plot(rec_x, t_ref_list[i], label="Reflection wave")
-    plt.plot(rec_x, t_hw_list[i], label="Head wave")
-    plt.plot(rec_x, t_gr_list[i], label="Ground roll")
+# QC Quality
+i = 9
+plt.figure()
+plt.title(" shot %s"%i)
+plt.plot(rec_x, t_direct_list[i], label="Direct wave")
+plt.plot(rec_x, t_ref_list[i], label="Reflection wave")
+plt.plot(rec_x, t_hw_list[i], label="Head wave")
+plt.plot(rec_x, t_gr_list[i], label="Ground roll")
 
-    plt.ylim(np.max(t_direct_list), 0)
-    plt.xlabel('Distância')
-    plt.ylabel('Tempo')
-    plt.grid(True)
+plt.ylim(np.max(t_direct_list), 0)
+plt.xlabel('Distância')
+plt.ylabel('Tempo')
+plt.grid(True)
 plt.show()
 
-sism = np.zeros((Nt, len(rec_x)))
+sism = np.zeros((Nt, len(rec_x),len(shot_x)))
 
 for i, shot in enumerate(shot_x):
     for j, receptor in enumerate(rec_x):
@@ -95,29 +96,30 @@ for i, shot in enumerate(shot_x):
         u = int((dx / v_gr) / dt)  
 
         if k < Nt:
-            sism[k, j] = 1
+            sism[k, j, i] = 1
         if y < Nt:
-            sism[y, j] = 1
+            sism[y, j, i] = 1
         if z < Nt:
-            sism[z, j] = 1
+            sism[z, j, i] = 1
         if u < Nt:
-            sism[u, j] = 1
+            sism[u, j, i] = 1
 
     for j in range(len(rec_x)):
-        sism[:, j] = np.convolve(sism[:, j], wavelet, mode='same')
-    
-    k = np.max(np.abs(sism))   
+        sism[:, j, i] = np.convolve(sism[:, j, i], wavelet, mode='same')
 
-    plt.figure()
-    plt.title(" shot %s"%i)
-    plt.imshow(sism, cmap="seismic", aspect="auto", extent=[0, len(rec_x), t[-1], t[0]], vmin=-k, vmax=k)
-    plt.colorbar(label='Amplitude')
-    plt.xlabel('Receptores')
-    plt.ylabel('Tempo (s)')
-    plt.tight_layout()
-    plt.show()
 
-    sism = np.zeros((Nt, len(rec_x)))
+# QC Quality
+i = 9
+k = np.max(np.abs(sism[:,:,i]))   
+plt.figure()
+plt.title(" shot %s"%i)
+plt.imshow(sism[:,:,i], cmap="seismic", aspect="auto", extent=[0, len(rec_x), t[-1], t[0]], vmin=-k, vmax=k)
+plt.colorbar(label='Amplitude')
+plt.xlabel('Receptores')
+plt.ylabel('Tempo (s)')
+plt.tight_layout()
+plt.show()
+
 
 dist = np.zeros((len(shot_x), len(rec_x)))
 
@@ -126,6 +128,6 @@ for i, shot in enumerate(shot_x):
         dist[i, j] = np.abs(receptor - shot)
 
 
-df_dist = pd.DataFrame(dist, columns=[f'Receptor {j+1}' for j in range(len(rec_x))], index=[f'Shot {i+1}' for i in range(len(shot_x))])
+# df_dist = pd.DataFrame(dist, columns=[f'Receptor {j+1}' for j in range(len(rec_x))], index=[f'Shot {i+1}' for i in range(len(shot_x))])
 
-print(df_dist)
+# print(df_dist)
