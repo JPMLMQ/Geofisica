@@ -4,15 +4,18 @@ import pandas as pd
 from scipy.signal import ricker
 
 
-receiverTable = pd.read_csv('./receivers.csv')
-sourceTable = pd.read_csv('./sources.csv')
+receiverTable = pd.read_csv('d:/GitHub/Geofisica/receivers.csv')
+sourceTable = pd.read_csv('d:/GitHub/Geofisica/sources.csv')
 
 rec_x = receiverTable['coordx']
+rec_z = receiverTable['coordz']
 recindex = receiverTable['index']
 rec_z = receiverTable['coordz']
 shot_x = sourceTable['coordx']
+shot_z = sourceTable['coordz']
 shotindex = sourceTable['index']
-shot_z = sourceTable['coordz'] 
+shot_z = sourceTable['coordz']
+
 Nz= 1000
 
 plt.scatter(rec_x, rec_z, color='red', marker='*',label='Receptores')
@@ -44,19 +47,21 @@ t_ref_list = []
 t_hw_list = []
 t_gr_list = []
 
-for shot in shot_x:
+for s, shot_x_val in enumerate(shot_x):
     t_direct_wave = []
     t_ref_wave = []
     t_hw_wave = []
     t_gr_wave = []
     
-    for receptor in rec_x:
-        dx = np.abs(receptor - shot)
+    for r, rec_x_val in enumerate(rec_x):
+        dx = np.abs(rec_x_val - shot_x_val)
+        dz = np.abs(rec_z[r] - shot_z[s])
+        dist = np.sqrt(dx**2 + dz**2)
         
-        t_direct = dx / v1
-        t_ref = np.sqrt((2 * Nz / v1) ** 2 + (dx / v1) ** 2)
-        t_hw = dx / v2 + (2 * Nz * np.sqrt(v2 ** 2 - v1 ** 2)) / (v1 * v2)
-        t_gr = dx / v_gr
+        t_direct = dist / v1
+        t_ref = np.sqrt((2 * Nz / v1) ** 2 + (dist / v1) ** 2)
+        t_hw = dist / v2 + (2 * Nz * np.sqrt(v2 ** 2 - v1 ** 2)) / (v1 * v2)
+        t_gr = dist / v_gr
 
         t_direct_wave.append(t_direct)
         t_ref_wave.append(t_ref)
@@ -86,26 +91,29 @@ plt.show()
 
 sism = np.zeros((Nt, len(rec_x),len(shot_x)))
 
-for i, shot in enumerate(shot_x):
-    for j, receptor in enumerate(rec_x):
-        dx = np.abs(receptor - shot)
+for s, shot_x_val in enumerate(shot_x):
+    for r, rec_x_val in enumerate(rec_x):
+        dx = np.abs(rec_x_val - shot_x_val)
+        dz = np.abs(rec_z[r] - shot_z[s])
+        dist = np.sqrt(dx**2 + dz**2)
 
-        k = int((dx / v1) / dt)  
-        y = int((np.sqrt((2 * Nz / v1) ** 2 + (dx / v1) ** 2)) / dt)  
-        z = int((dx / v2 + (2 * Nz * np.sqrt(v2 ** 2 - v1 ** 2)) / (v1 * v2)) / dt)  
-        u = int((dx / v_gr) / dt)  
+        k = int((dist / v1) / dt)  
+        y = int((np.sqrt((2 * Nz / v1) ** 2 + (dist / v1) ** 2)) / dt)  
+        z = int((dist / v2 + (2 * Nz * np.sqrt(v2 ** 2 - v1 ** 2)) / (v1 * v2)) / dt)  
+        u = int((dist / v_gr) / dt)  
 
         if k < Nt:
-            sism[k, j, i] = 1
+            sism[k, r, s] = 1
         if y < Nt:
-            sism[y, j, i] = 1
+            sism[y, r, s] = 1
         if z < Nt:
-            sism[z, j, i] = 1
+            sism[z, r, s] = 1
         if u < Nt:
-            sism[u, j, i] = 1
+            sism[u, r, s] = 1
 
-    for j in range(len(rec_x)):
-        sism[:, j, i] = np.convolve(sism[:, j, i], wavelet, mode='same')
+    for r in range(len(rec_x)):
+        sism[:, r, s] = np.convolve(sism[:, r, s], wavelet, mode='same')
+
 
 
 # QC Quality
@@ -120,14 +128,11 @@ plt.ylabel('Tempo (s)')
 plt.tight_layout()
 plt.show()
 
-
 dist = np.zeros((len(shot_x), len(rec_x)))
+for s in shotindex:
+    for r in recindex:
+        dx = np.abs(rec_x[r] - shot_x[s])
+        dz = np.abs(rec_z[r] - shot_z[s])
+        dist[s, r] = np.sqrt(dx**2 + dz**2)
 
-for i, shot in enumerate(shot_x): 
-    for j, receptor in enumerate(rec_x): 
-        dist[i, j] = np.abs(receptor - shot)
 
-
-# df_dist = pd.DataFrame(dist, columns=[f'Receptor {j+1}' for j in range(len(rec_x))], index=[f'Shot {i+1}' for i in range(len(shot_x))])
-
-# print(df_dist)

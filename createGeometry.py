@@ -3,11 +3,11 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 # sources
-sx_init = 0
-sx_end  = 10000
-Nsource = 5
+sx_init = 100
+sx_end  = 4900
+Nsource = 10
 sx = np.linspace(sx_init,sx_end,Nsource,endpoint=False)
-sz =  50 * np.ones(len(sx))
+sz =  300 * np.ones(len(sx))
 sIdx = np.arange(Nsource)
 
 # receivers
